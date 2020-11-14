@@ -12,8 +12,8 @@ Grab data frmo SubReddit and Store it in MongoDB
 """
 
 # connect to local MongoDB
-# client = pymongo.MongoClient("mongodb", 27017)
-# redditdb = client.Reddit
+client = pymongo.MongoClient("mongodb", 27017)
+redditdb = client.Reddit
 
 def redditInstance():
 	"""

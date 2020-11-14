@@ -1,12 +1,20 @@
 import praw
 import json
-import datetime
+from datetime import datetime
+import pymongo
 from config import *
 
 """
 Grab data frmo SubReddit and Store it in MongoDB
 1- get Articles and Comments the the user posted each Article/Comment
+2- store Articles, Comments and Users in MongoDB
 """
+
+# connect to local MongoDB
+client = pymongo.MongoClient("mongodb", 27017)
+usersdb = client.Users
+articlesdb = client.Articles
+commentsdb = client.Comments
 
 def redditInstance():
 	"""
@@ -26,8 +34,8 @@ def cleanArticle(submission):
 	"""
 		take a Reddit submission object and turn it into dictionary
 	"""
-	now = datetime.datetime.utcnow()
-	created = datetime.datetime.utcfromtimestamp(submission.created_utc)
+	now = datetime.utcnow()
+	created = datetime.utcfromtimestamp(submission.created_utc)
 	try:
 		submission_author = submission.author.name
 	except:
@@ -58,8 +66,8 @@ def cleanComment(comment,article_id):
 	"""
 		take a Reddit comment object and turn it into dictionary
 	"""
-	now = datetime.datetime.utcnow()
-	created = datetime.datetime.utcfromtimestamp(comment.created_utc)
+	now = datetime.utcnow()
+	created = datetime.utcfromtimestamp(comment.created_utc)
 
 	try:
 		name = comment.author.name
@@ -101,8 +109,8 @@ def getRedditor(redditor):
 	"""
 		get a Redditor instance, and return useful information as dictionarry 
 	"""
-	now = datetime.datetime.utcnow()
-	created = datetime.datetime.utcfromtimestamp(redditor.created_utc)
+	now = datetime.utcnow()
+	created = datetime.utcfromtimestamp(redditor.created_utc)
 
 	data = {
 		"redditor_id": redditor.id,
@@ -122,11 +130,14 @@ def main():
 	redditors = []
 	for article in articles:
 		if article["author"] != 'None':
-			redditors.append(getRedditor(reddit.redditor(article["author"] )))
+			redditors.append(getRedditor(reddit.redditor(article["author"])))
 	for comment in comments:
 		if comment["author"] != 'None':
-			redditors.append(getRedditor(reddit.redditor(article["author"] )))
-	print(len(redditors),len(articles)+len(comments))
+			redditors.append(getRedditor(reddit.redditor(article["author"])))
+	
+	usersdb.Users.insert_many(redditors)
+	usersdb.Articles.insert_many(articles)
+	usersdb.Comments.insert_many(comments)
 
 if __name__ == '__main__':
 	main()

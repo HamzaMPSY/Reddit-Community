@@ -1,0 +1,17 @@
+version: '3'
+services:
+  RedditCollector:
+    build: RedditCollector/
+    volumes:
+      - ./RedditCollector/:/RedditCollector
+      - ./RedditCollector/requirements.txt:/RedditCollector/requirements.txt
+    command: ["python", "app.py"]
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo
+    ports:
+      - 27027:27017
+    logging:
+      driver: "none"

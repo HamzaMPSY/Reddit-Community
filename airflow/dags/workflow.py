@@ -37,7 +37,7 @@ def loadInPostgres(**context):
 	articles = infos[0]
 	comments = infos[1]
 	users = infos[2]
-	
+
 	for user in users:
 		postgres_db.execute(
 			text(INSERT_USER),
@@ -102,7 +102,7 @@ default_args = {
 
 # instantiate a DAG
 dag = DAG(
-    "Reddit Community",
+    "RedditCommunity",
     description="",
     catchup=False,
     schedule_interval=timedelta(minutes=1),

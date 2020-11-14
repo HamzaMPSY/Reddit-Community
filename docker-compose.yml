@@ -34,8 +34,8 @@ services:
   airflow:
     build: airflow/
     volumes:
-      - ./airflow/dags/:usr/local/airflow/dags/
-      - ./airflow/requirements.txt:usr/local/airflow/requirements.txt
+      - ./airflow/dags/:/usr/local/airflow/dags/
+      - ./airflow/requirements.txt:/usr/local/airflow/requirements.txt
     ports:
       - "8081:8080"
     command: ["webserver", "scheduler"]

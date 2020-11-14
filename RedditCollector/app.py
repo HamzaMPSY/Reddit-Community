@@ -115,7 +115,7 @@ def getArticlesCommentsUsers(subreddit,reddit):
 			redditdb.Articles.insert(article)
 			if article["author"] != 'None':
 				user = getRedditor(reddit.redditor(article["author"]))
-				redditdb.Users.insert_many(user)
+				redditdb.Users.insert(user)
 			# to get all the comments and their replies 
 			submission.comments.replace_more(limit=None)
 			for comment in submission.comments.list():
@@ -123,7 +123,7 @@ def getArticlesCommentsUsers(subreddit,reddit):
 				redditdb.Comments.insert(cmnt)
 				if cmnt["author"] != 'None':
 					user = getRedditor(reddit.redditor(cmnt["author"]))
-					redditdb.Users.insert_many(user)
+					redditdb.Users.insert(user)
 
 def main():
 	reddit = redditInstance()

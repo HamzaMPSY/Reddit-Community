@@ -91,7 +91,7 @@ def loadInPostgres(**context):
 # define default arguments
 default_args = {
     "owner": "MPSY",
-    "start_date": datetime.utcnow(),
+    "start_date": datetime(2020, 11, 14),
     # 'end_date':
     "email": ["example@example.com"],
     "email_on_failure": False,

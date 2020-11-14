@@ -12,8 +12,8 @@ Grab data frmo SubReddit and Store it in MongoDB
 """
 
 # connect to local MongoDB
-client = pymongo.MongoClient("mongodb", 27017)
-redditdb = client.Reddit
+# client = pymongo.MongoClient("mongodb", 27017)
+# redditdb = client.Reddit
 
 def redditInstance():
 	"""
@@ -112,14 +112,17 @@ def getArticlesCommentsUsers(subreddit,reddit):
 	for submissions in all_submissions:
 		for submission in submissions:
 			article = cleanArticle(submission)
-			redditdb.Articles.insert(article)
+			print(article)
+			#redditdb.Articles.insert(article)
 			if article["author"] != 'None':
 				user = getRedditor(reddit.redditor(article["author"]))
-				redditdb.Users.insert(user)
+				print(user)
+				# redditdb.Users.insert(user)
 			# to get all the comments and their replies 
 			submission.comments.replace_more(limit=None)
 			for comment in submission.comments.list():
 				cmnt = cleanComment(comment,submission.id)
+				print(cmnt)
 				redditdb.Comments.insert(cmnt)
 				if cmnt["author"] != 'None':
 					user = getRedditor(reddit.redditor(cmnt["author"]))
@@ -132,6 +135,7 @@ def main():
 	getArticlesCommentsUsers(subreddit,reddit)
 
 if __name__ == '__main__':
+	main()
 	scheduler = BlockingScheduler()
 	scheduler.add_job(main, 'interval', hours=1)
 	scheduler.start()

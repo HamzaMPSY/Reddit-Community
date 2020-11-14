@@ -15,3 +15,30 @@ services:
       - 27027:27017
     logging:
       driver: "none"
+
+  postgresdb:
+    image: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 5555:5432
+
+  meta:
+    image: metabase/metabase
+    ports:
+      - 12345:3000
+    depends_on:
+      - postgresdb
+
+  airflow:
+    build: airflow/
+    volumes:
+      - ./airflow/dags/:/usr/local/airflow/dags/
+      - ./airflow/requirements.txt:/usr/local/airflow/requirements.txt
+    ports:
+      - "8081:8080"
+    command: ["webserver", "scheduler"]
+    depends_on:
+      - mongodb
+      - postgresdb

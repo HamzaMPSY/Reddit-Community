@@ -23,7 +23,7 @@ postgres_db.execute(CREATE_COMMENTS_TABLE)
 def extractFromMongDB():
 	"""Extracts all tweets from the MongoDB database as a list"""
 	# define a timestamp to only extract newest data
-	last_extraction_date = datetime.utcnow() - timedelta(minutes=1)
+	last_extraction_date = datetime.utcnow() - timedelta(minutes=5)
 	articles = list(db.Articles.find({"archived": {"$gte": last_extraction_date}}))
 	comments = list(db.Comments.find({"archived": {"$gte": last_extraction_date}}))
 	users = list(db.Users.find({"archived": {"$gte": last_extraction_date}}))
@@ -97,7 +97,7 @@ default_args = {
     "email_on_failure": False,
     "email_on_retry": False,
     "retries": 1,
-    "retry_delay": timedelta(minutes=1),
+    "retry_delay": timedelta(minutes=5),
 }
 
 # instantiate a DAG
@@ -105,7 +105,7 @@ dag = DAG(
     "RedditCommunity",
     description="",
     catchup=False,
-    schedule_interval=timedelta(minutes=1),
+    schedule_interval=timedelta(minutes=5),
     default_args=default_args,
 )
 

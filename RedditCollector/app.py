@@ -2,6 +2,7 @@ import praw
 import json
 from datetime import datetime
 import pymongo
+from apscheduler.schedulers.blocking import BlockingScheduler
 from config import *
 
 """
@@ -12,9 +13,7 @@ Grab data frmo SubReddit and Store it in MongoDB
 
 # connect to local MongoDB
 client = pymongo.MongoClient("mongodb", 27017)
-usersdb = client.Users
-articlesdb = client.Articles
-commentsdb = client.Comments
+redditdb = client.Reddit
 
 def redditInstance():
 	"""
@@ -86,25 +85,6 @@ def cleanComment(comment,article_id):
 
 	return data
 
-def getArticlesComments(subreddit):
-	"""
-		Function to get the articles and comments from a subreddit
-		return :
-			articles : array of json blobs each one contains an article from the subreddit
-			commnets : array of json blobs each one is a comment corresponding to an article in the articles array;
-	"""
-	comments = []
-	articles = []
-	submissions = subreddit.top('hour')
-	for submission in submissions:
-		articles.append(cleanArticle(submission))
-		# to get all the comments and their replies 
-		submission.comments.replace_more(limit=None)
-		for comment in submission.comments.list():
-			comments.append(cleanComment(comment,submission.id))
-
-	return articles,comments
-
 def getRedditor(redditor):
 	"""
 		get a Redditor instance, and return useful information as dictionarry 
@@ -122,22 +102,36 @@ def getRedditor(redditor):
 	}
 	return data
 
+def getArticlesCommentsUsers(subreddit,reddit):
+	"""
+		Function to (1) get the articles, comments and users from a subreddit, (2) store them in a mongoDB 
+		
+	"""
+
+	all_submissions = [subreddit.top('hour'),subreddit.hot(),subreddit.rising()]
+	for submissions in all_submissions:
+		for submission in submissions:
+			article = cleanArticle(submission)
+			redditdb.Articles.insert(article)
+			if article["author"] != 'None':
+				user = getRedditor(reddit.redditor(article["author"]))
+				redditdb.Users.insert_many(user)
+			# to get all the comments and their replies 
+			submission.comments.replace_more(limit=None)
+			for comment in submission.comments.list():
+				cmnt = cleanComment(comment,submission.id)
+				redditdb.Comments.insert(cmnt)
+				if cmnt["author"] != 'None':
+					user = getRedditor(reddit.redditor(cmnt["author"]))
+					redditdb.Users.insert_many(user)
+
 def main():
 	reddit = redditInstance()
 	assert len(SUBREDDIT) > 0
 	subreddit = reddit.subreddit(SUBREDDIT)
-	articles, comments = getArticlesComments(subreddit)
-	redditors = []
-	for article in articles:
-		if article["author"] != 'None':
-			redditors.append(getRedditor(reddit.redditor(article["author"])))
-	for comment in comments:
-		if comment["author"] != 'None':
-			redditors.append(getRedditor(reddit.redditor(article["author"])))
-	
-	usersdb.Users.insert_many(redditors)
-	usersdb.Articles.insert_many(articles)
-	usersdb.Comments.insert_many(comments)
+	getArticlesCommentsUsers(subreddit,reddit)
 
 if __name__ == '__main__':
-	main()
+	scheduler = BlockingScheduler()
+	scheduler.add_job(main, 'interval', hours=1)
+	scheduler.start()

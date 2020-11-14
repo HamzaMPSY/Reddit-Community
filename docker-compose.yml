@@ -1,6 +1,6 @@
 version: '3'
 services:
-  RedditCollector:
+  reddit-collector:
     build: RedditCollector/
     volumes:
       - ./RedditCollector/:/RedditCollector

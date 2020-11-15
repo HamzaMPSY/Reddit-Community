@@ -7,7 +7,7 @@ from airflow.operators.python_operator import PythonOperator
 from config import *
 
 # connect to local MongoDB
-client = MongoClient("mongodb", 27017)
+client = MongoClient("mongodb", 27027)
 db = client.redditdb
 
 # connect to postgres

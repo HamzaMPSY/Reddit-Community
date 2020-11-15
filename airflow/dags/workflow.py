@@ -85,7 +85,7 @@ def loadInPostgres(**context):
 			postgres_db.execute(
 				text(INSERT_COMMENT),
 				{
-				"comment_id" : comment["comment_id"],
+				"comment_id" : str(comment["comment_id"]),
 				"article_id" : comment["article_id"],
 				"author": comment["author"],
 				"body": comment["body"],

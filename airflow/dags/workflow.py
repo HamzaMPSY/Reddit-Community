@@ -39,54 +39,63 @@ def loadInPostgres(**context):
 	users = infos[2]
 
 	for user in users:
-		postgres_db.execute(
-			text(INSERT_USER),
-			{
-				"redditor_id": user["redditor_id"],
-				"redditor_name": user["redditor_name"],
-				"comment_karma": user["comment_karma"],
-				"is_mod": user["is_mod"],
-				"created_utc": user["created_utc"],
-				"archived": user["archived"]
-			},
-		)
+		try :
+			postgres_db.execute(
+				text(INSERT_USER),
+				{
+					"redditor_id": user["redditor_id"],
+					"redditor_name": user["redditor_name"],
+					"comment_karma": user["comment_karma"],
+					"is_mod": user["is_mod"],
+					"created_utc": user["created_utc"],
+					"archived": user["archived"]
+				},
+			)
+		except :
+			pass
 
 	for article in articles:
-		postgres_db.execute(
-			text(INSERT_ARTICLE),
-			{
-				"article_id" : article["article_id"],
-				"title" : article["title"],
-				"score" : article["score"],
-				"url" : article["url"],
-				"name" : article["name"],
-				"author" : article["author"],
-				"is_video" : article["is_video"],
-				"over_18" : article["over_18"],
-				"selftext" : article["selftext"],
-				"shortlink" : article["shortlink"],
-				"subreddit_type" : article["subreddit_type"],
-				"subreddit_subscribers" : article["subreddit_subscribers"],
-				"thumbnail" : article["thumbnail"],
-				"ups" : article["ups"],
-				"created_utc" : article["created_utc"],
-				"archived" : article["archived"]
-			},
-		)
+		try:
+			postgres_db.execute(
+				text(INSERT_ARTICLE),
+				{
+					"article_id" : article["article_id"],
+					"title" : article["title"],
+					"score" : article["score"],
+					"url" : article["url"],
+					"name" : article["name"],
+					"author" : article["author"],
+					"is_video" : article["is_video"],
+					"over_18" : article["over_18"],
+					"selftext" : article["selftext"],
+					"shortlink" : article["shortlink"],
+					"subreddit_type" : article["subreddit_type"],
+					"subreddit_subscribers" : article["subreddit_subscribers"],
+					"thumbnail" : article["thumbnail"],
+					"ups" : article["ups"],
+					"created_utc" : article["created_utc"],
+					"archived" : article["archived"]
+				},
+			)
+		except:
+			pass
 
 	for comment in comments:
-		postgres_db.execute(
-			text(INSERT_COMMENT),
-			{
-			"comment_id" : comment["comment_id"],
-			"article_id" : comment["article_id"],
-			"author": comment["author"],
-			"body": comment["body"],
-			"ups": comment["ups"],
-			"created_utc": comment["created_utc"],
-			"archived": comment["archived"]
-		}
-	)
+		try:
+			postgres_db.execute(
+				text(INSERT_COMMENT),
+				{
+				"comment_id" : comment["comment_id"],
+				"article_id" : comment["article_id"],
+				"author": comment["author"],
+				"body": comment["body"],
+				"ups": comment["ups"],
+				"created_utc": comment["created_utc"],
+				"archived": comment["archived"]
+				}
+			)
+		except :
+			pass
 
 # define default arguments
 default_args = {

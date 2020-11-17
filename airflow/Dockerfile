@@ -1,6 +1,5 @@
 FROM puckel/docker-airflow
 
-
 WORKDIR /app
 
 COPY requirements.txt /app
